@@ -6,10 +6,7 @@ const auth = require('feathers-authentication').hooks;
 module.exports = function () {
   const app = this;
 
-  app.service('/debts/pay', { create: pay })
-    .before({
-      // all: [auth.verifyToken(), auth.populateUser(), auth.restrictToAuthenticated()]
-    });
+  app.service('/debts/pay', { create: pay });
   
   app.service('/debts', new Service({ Model: require('./model') }))
     .after({ create: calcDebtTotal() });

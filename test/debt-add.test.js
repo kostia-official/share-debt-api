@@ -1,20 +1,18 @@
-const { request } = require('./test-env.js');
+const { request, helpers } = require('./test-env.js');
 const _ = require('lodash');
 
 const test = require('ava');
 const debt = { amount: 200, name: 'beer' };
 
-const User = require('../src/services/users/model');
-const Debt = require('../src/services/debts/model');
-const Total = require('../src/services/totals/model');
-
-const getName = () => (new Date()).toString();
-
 const count = 3;
 
 test.before(async() => {
-  debt.to = (await User.create({})).id;
-  debt.from = _(await Promise.all(_.times(count, () => User.create({ name: getName() }))))
+  const { email, password } = await helpers.createUser();
+  console.log({ email, password });
+  const user = (await request.post('/auth/local').send({ email, password })).body;
+  console.log(user);
+  debt.to = user.id;
+  debt.from = _(await Promise.all(_.times(count, () => helpers.createUser())))
     .map(user => user.id).value();
 });
 
