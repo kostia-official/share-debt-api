@@ -29,3 +29,17 @@ test('to', async t => {
     .expect(200);
 
 });
+
+test('from', async t => {
+
+  await request.get(`/totals/from/${debt.from[0]}`)
+    .expect(({ body }) => {
+      t.is(body.length, 1);
+      body.map(user => {
+        t.truthy(user.fromName);
+        return t.truthy(user.toName);
+      });
+    })
+    .expect(200);
+
+});
