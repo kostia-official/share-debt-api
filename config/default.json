@@ -1,0 +1,7 @@
+{
+  "host": "localhost",
+  "port": 3020,
+  "db": {
+    "url": "mongodb://localhost:27017/share"
+  }
+}
