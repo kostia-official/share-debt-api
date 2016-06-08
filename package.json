@@ -19,7 +19,7 @@
     "ava": "NODE_ENV=test ava -v test/*.test.js",
     "build": "webpack",
     "watch": "webpack -w",
-    "postinstall": "if-env NODE_ENV=production && webpack && npm prune --production || webpack"
+    "postinstall": "webpack"
   },
   "dependencies": {
     "amqplib": "0.4.1",
