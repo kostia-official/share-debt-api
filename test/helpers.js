@@ -1,20 +1,30 @@
-const User = require('../src/services/users/model');
 const _ = require('lodash');
 
-function randomString(length = 10) {
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+module.exports = (app) => {
+  const request = require('supertest-promised')(app);
 
-  return _(length)
-    .times(() => possible.charAt(Math.floor(Math.random() * possible.length)))
-    .join('');
-}
+  function randomString(length = 10) {
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-function userData() {
-  return { email: randomString(), name: randomString(), password: randomString() };
-}
+    return _(length)
+      .times(() => possible.charAt(Math.floor(Math.random() * possible.length)))
+      .join('');
+  }
 
-function createUser() {
-  return User.create(userData());
-}
+  function userData(user) {
+    return _.assign({ email: randomString() + '@gmail.com', name: randomString(), password: randomString() }, user);
+  }
 
-module.exports = { createUser, randomString, userData };
+  function createUser(user) {
+    return app.service('users').create(userData(user));
+  }
+
+  async function createLoggedInUser(user) {
+    const data = userData(user);
+    const a = await createUser(data);
+    const { token } = (await request.post('/auth/local').send(data)).body;
+    return { ...a.toObject(), token, tokenHeader: ['Authorization', token] };
+  }
+
+  return { createUser, randomString, userData, createLoggedInUser };
+};

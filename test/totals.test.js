@@ -1,4 +1,4 @@
-const { request } = require('./test-env.js');
+const { request, helpers } = require('./test-env.js');
 const _ = require('lodash');
 const test = require('ava');
 
@@ -8,17 +8,24 @@ const getName = () => (new Date()).toString();
 
 const count = 3;
 const debt = { amount: 200, name: 'beer' };
+const ctx = {};
 
 test.before(async() => {
-  debt.to = (await User.create({ name: getName() })).id;
+  const user = await helpers.createLoggedInUser();
+  ctx.tokenHeader = user.tokenHeader;
+  debt.to = String(user.id);
   debt.from = _(await Promise.all(_.times(count, () => User.create({ name: getName() }))))
     .map(user => user.id).value();
-  await request.post('/debts').send(debt).expect(201);
+  await request.post('/debts')
+    .set(...ctx.tokenHeader)
+    .send(debt)
+    .expect(201);
 });
 
 test('to', async t => {
 
   await request.get(`/totals/to/${debt.to}`)
+    .set(...ctx.tokenHeader)
     .expect(({ body }) => {
       t.is(body.length, count);
       body.map(user => {
@@ -33,6 +40,7 @@ test('to', async t => {
 test('from', async t => {
 
   await request.get(`/totals/from/${debt.from[0]}`)
+    .set(...ctx.tokenHeader)
     .expect(({ body }) => {
       t.is(body.length, 1);
       body.map(user => {
