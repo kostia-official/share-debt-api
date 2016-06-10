@@ -1,8 +1,15 @@
 process.env.NODE_ENV = 'test';
 
-import sinon from 'sinon';
-import request from 'supertest-promised';
-import app from '../src/app';
-import helpers from './helpers';
+const app = require('../src/app');
+const randomPort = require('random-port');
+const sinon = require('sinon');
+const request = require('supertest-promised')(app);
+const helpers = require('./helpers')(app);
 
-module.exports = { app, sinon, request: request(app), helpers };
+randomPort(port => {
+  const server = app.listen(port);
+  app.setup(server);
+});
+
+
+module.exports = { app, sinon, request, helpers };
