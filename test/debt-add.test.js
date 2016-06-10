@@ -18,7 +18,6 @@ test.before(async() => {
 });
 
 test('debt add', async t => {
-
   await request.post('/debts')
     .set(...tokenHeader)
     .send(debt)

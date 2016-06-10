@@ -17,7 +17,7 @@ test.before(async() => {
   debt.to = String(user.id);
   
   debt.from = await promdash
-    .times(3, helpers.createUser)
+    .times(count, helpers.createUser)
     .map(user => user.id);
 
   await request.post('/debts')
