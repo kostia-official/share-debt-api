@@ -1,4 +1,4 @@
-const handler = require('feathers-errors/handler');
+const errorhandler = require('./errorhandler');
 const notFound = require('./not-found-handler');
 
 module.exports = function () {
@@ -8,5 +8,5 @@ module.exports = function () {
   const app = this;
 
   app.use(notFound());
-  app.use(handler());
+  app.use(errorhandler());
 };

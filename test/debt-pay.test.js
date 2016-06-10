@@ -18,13 +18,15 @@ test.before(async() => {
     .map(user => user.id).value();
 });
 
+test.before(() => request
+  .post('/debts')
+  .send(debt)
+  .set(...ctx.tokenHeader)
+  .expect(201)
+);
+
 test('debt pay', async t => {
   t.plan(1);
-
-  await request.post('/debts')
-    .set(...ctx.tokenHeader)
-    .send(debt)
-    .expect(201);
 
   const pay = { from: debt.from[0], to: debt.to, amount: 10 };
 
@@ -39,5 +41,16 @@ test('debt pay', async t => {
       t.is(body[0].amount, debt.amount / count - pay.amount);
     })
     .expect(200);
+
+});
+
+test('not own debt pay', async() => {
+
+  const pay = { from: debt.from[0], to: debt.from[1], amount: 10 };
+
+  await request.post('/debts/pay')
+    .set(...ctx.tokenHeader)
+    .send(pay)
+    .expect(401);
 
 });

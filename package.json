@@ -47,6 +47,7 @@
     "lodash": "4.12.0",
     "mongoose": "4.4.17",
     "mongoose-rename-id": "1.0.2",
+    "promdash": "1.1.0",
     "random-port": "0.1.0",
     "request": "2.72.0",
     "serve-favicon": "2.3.0"

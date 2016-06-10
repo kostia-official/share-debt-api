@@ -1,6 +1,7 @@
 const { request, helpers } = require('./test-env.js');
 const _ = require('lodash');
 const test = require('ava');
+const promdash = require('promdash');
 
 const User = require('../src/services/users/model');
 
@@ -14,8 +15,11 @@ test.before(async() => {
   const user = await helpers.createLoggedInUser();
   ctx.tokenHeader = user.tokenHeader;
   debt.to = String(user.id);
-  debt.from = _(await Promise.all(_.times(count, () => User.create({ name: getName() }))))
-    .map(user => user.id).value();
+  
+  debt.from = await promdash
+    .times(3, helpers.createUser)
+    .map(user => user.id);
+
   await request.post('/debts')
     .set(...ctx.tokenHeader)
     .send(debt)
@@ -24,25 +28,10 @@ test.before(async() => {
 
 test('to', async t => {
 
-  await request.get(`/totals/to/${debt.to}`)
+  await request.get('/totals/to')
     .set(...ctx.tokenHeader)
     .expect(({ body }) => {
       t.is(body.length, count);
-      body.map(user => {
-        t.truthy(user.fromName);
-        return t.truthy(user.toName);
-      });
-    })
-    .expect(200);
-
-});
-
-test('from', async t => {
-
-  await request.get(`/totals/from/${debt.from[0]}`)
-    .set(...ctx.tokenHeader)
-    .expect(({ body }) => {
-      t.is(body.length, 1);
       body.map(user => {
         t.truthy(user.fromName);
         return t.truthy(user.toName);
