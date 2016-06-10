@@ -1,38 +1,41 @@
 const { request, helpers } = require('./test-env.js');
-const _ = require('lodash');
+const _ = require('promdash');
 const test = require('ava');
-
-const User = require('../src/services/users/model');
-
-const getName = () => (new Date()).toString();
 
 const count = 3;
 const debt = { amount: 200, name: 'beer' };
-const ctx = {};
+
+let loggedUser;
+let tokenHeader;
 
 test.before(async() => {
-  const user = await helpers.createLoggedInUser();
-  ctx.tokenHeader = user.tokenHeader;
-  debt.to = String(user.id);
-  debt.from = _(await Promise.all(_.times(count, () => User.create({ name: getName() }))))
-    .map(user => user.id).value();
+
+  loggedUser = await helpers.createLoggedInUser();
+  tokenHeader = loggedUser.tokenHeader;
+  
+  debt.to = (await helpers.createUser()).id;
+  debt.from = await _
+    .times(count, helpers.createUser)
+    .concat(loggedUser)
+    .map(user => user.id);
+
   await request.post('/debts')
-    .set(...ctx.tokenHeader)
+    .set(...tokenHeader)
     .send(debt)
     .expect(201);
 });
 
 test('from', async t => {
 
-  // await request.get('/totals/from')
-  //   .set(...ctx.tokenHeader)
-  //   .expect(({ body }) => {
-  //     t.is(body.length, 1);
-  //     body.map(user => {
-  //       t.truthy(user.fromName);
-  //       return t.truthy(user.toName);
-  //     });
-  //   })
-  //   .expect(200);
+  await request.get('/totals/from')
+    .set(...tokenHeader)
+    .expect(({ body }) => {
+      t.is(body.length, 1);
+      body.map(user => {
+        t.is(user.fromName, loggedUser.name);
+        return t.truthy(user.toName);
+      });
+    })
+    .expect(200);
 
 });

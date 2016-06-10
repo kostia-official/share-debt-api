@@ -25,6 +25,6 @@ module.exports = (app) => {
     const { token } = (await request.post('/auth/local').send(data)).body;
     return { ...a.toObject(), token, tokenHeader: ['Authorization', token] };
   }
-
+  
   return { createUser, randomString, userData, createLoggedInUser };
 };
