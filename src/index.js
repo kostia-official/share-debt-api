@@ -1,10 +1,7 @@
 const app = require('./app');
 const debug = require('debug')('app');
-const config = require('getconfig');
-const port = config.port;
-const server = app.listen(config.port);
+const { port, host } = require('getconfig');
+const server = app.listen(port);
 app.setup(server);
 
-server.on('listening', () =>
-  debug(`Feathers application started on ${config.host}:${port}`)
-);
+server.on('listening', () => debug(`Server started on ${host}:${port}`));
