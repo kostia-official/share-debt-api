@@ -29,7 +29,7 @@ DATABASE_URL - db connection url.
 
 ## API
 
-https://share-debt.herokuapp.com/
+http://ec2-54-89-121-106.compute-1.amazonaws.com/
 
 POST /debts - add debt
 ```
