@@ -27,6 +27,50 @@ All urls should be with `http://`, `amqp://` or `mongodb://`.
 DATABASE_URL - db connection url.
 ```
 
+## API
+
+http://ec2-54-89-121-106.compute-1.amazonaws.com/
+
+POST /debts - add debt
+```
+{ amount: 200,
+  name: 'beer',
+  to: '575ab12b2b222ca7084c347a',
+  from: 
+   [ '575ab12c2b222ca7084c347b',
+     '575ab12c2b222ca7084c347c',
+     '575ab12c2b222ca7084c347d' ] }
+```
+
+POST /debts/pay
+```
+{ from: '575ab19fcd9ae03d09b349a7',
+  to: '575ab19fcd9ae03d09b349a6',
+  amount: 10 }
+```
+
+GET /totals/to - have debts to me
+GET /totals/from - my debts
+```
+[ { from: '575ab1d08e60dc9609272a68',
+    to: '575ab1cf8e60dc9609272a67',
+    amount: 66.66666666666667,
+    id: '575ab1d08e60dc9609272a6c',
+    fromName: 'Vasya',
+    toName: 'Petya' }
+]
+```
+
+POST /users - sign up
+```
+{
+  email: String,
+  password: String,
+  number: String,
+  name: String
+}
+```
+
 ## Testing
 
 Simply run `npm test` and all your tests in the `test/` directory will be run.
