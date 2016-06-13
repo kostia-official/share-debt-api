@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('getconfig');
+const serverStatus = require('../helpers/server-status');
 
 const users = require('./users');
 const totals = require('./totals');
@@ -14,4 +15,6 @@ module.exports = function () {
   app.configure(users);
   app.configure(totals);
   app.configure(debts);
+
+  app.service('/', { find: serverStatus });
 };
