@@ -1,5 +1,5 @@
 {
-  "name": "alerts-microservice",
+  "name": "share-debt",
   "description": "",
   "version": "0.6.0",
   "main": "src/",
@@ -19,7 +19,7 @@
     "ava": "NODE_ENV=test ava -v test/*.test.js",
     "build": "webpack",
     "watch": "webpack -w",
-    "postinstall": "webpack"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "amqplib": "0.4.1",
