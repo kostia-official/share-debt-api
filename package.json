@@ -19,7 +19,8 @@
     "ava": "NODE_ENV=test ava -v test/*.test.js",
     "build": "webpack",
     "watch": "webpack -w",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "deploy": "docker build -t kozzztya/share-debt:latest . && docker push kozzztya/share-debt:latest"
   },
   "dependencies": {
     "amqplib": "0.4.1",
