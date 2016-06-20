@@ -29,7 +29,7 @@ DATABASE_URL - db connection url.
 
 ## API
 
-http://ec2-54-89-121-106.compute-1.amazonaws.com/
+https://share-debt.tk
 
 POST /debts - add debt
 ```
