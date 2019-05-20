@@ -9,16 +9,18 @@ const count = 3;
 let tokenHeader;
 let user;
 
-test.before(async() => {
+test.before(async () => {
   user = await helpers.createLoggedInUser();
   tokenHeader = user.tokenHeader;
-  debt.to = String(user.id);
+  debt.to = String(user._id);
   debt.from = _(await Promise.all(_.times(count, () => helpers.createUser())))
-    .map(user => user.id).value();
+    .map((user) => String(user._id))
+    .value();
 });
 
-test('debt add', async t => {
-  await request.post('/debts')
+test.only('debt add', async (t) => {
+  await request
+    .post('/debts')
     .set(...tokenHeader)
     .send(debt)
     .expect(({ body }) => {
@@ -26,7 +28,8 @@ test('debt add', async t => {
     })
     .expect(201);
 
-  await request.post('/debts')
+  await request
+    .post('/debts')
     .set(...tokenHeader)
     .send(debt)
     .expect(({ body }) => {
@@ -34,12 +37,12 @@ test('debt add', async t => {
     })
     .expect(201);
 
-  await request.get('/totals/to')
+  await request
+    .get('/totals/to')
     .set(...tokenHeader)
     .expect(({ body }) => {
-      body.map(({ to }) => t.is(to, String(user.id)));
-      t.is(body[0].amount, debt.amount / count * 2);
+      body.map(({ to }) => t.is(to, String(user._id)));
+      t.is(body[0].amount, (debt.amount / count) * 2);
     })
     .expect(200);
-
 });

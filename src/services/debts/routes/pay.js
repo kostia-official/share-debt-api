@@ -1,5 +1,5 @@
-const Total = require('../../totals/model');
+const Total = require('../../totals/totals.model');
 
-module.exports = async({ from, to, amount }) => {
-  return await Total.findOneAndUpdate({ from, to }, { $inc: { amount: -amount } });
+module.exports = ({ from, to, amount }) => {
+  return Total.findOneAndUpdate({ from, to }, { $inc: { amount: -amount } });
 };

@@ -1,56 +1,52 @@
 const { request, helpers } = require('./test-env.js');
-const _ = require('lodash');
+const _ = require('promdash');
 const test = require('ava');
-
-const User = require('../src/services/users/model');
-
-const getName = () => (new Date()).toString();
 
 const count = 3;
 const debt = { amount: 200, name: 'beer' };
 const ctx = {};
 
-test.before(async() => {
-  const user = await helpers.createLoggedInUser();
-  ctx.tokenHeader = user.tokenHeader;
-  debt.to = String(user.id);
-  debt.from = _(await Promise.all(_.times(count, () => User.create({ name: getName() }))))
-    .map(user => user.id).value();
+test.before(async () => {
+  const fromUsers = await _.times(count, helpers.createLoggedInUser);
+  ctx.toUser = await helpers.createLoggedInUser();
+  ctx.fromUserData = fromUsers[0];
+  debt.to = String(ctx.toUser._id);
+  debt.from = fromUsers.map(({ _id }) => String(_id));
+
+  return request
+    .post('/debts')
+    .set(...ctx.toUser.tokenHeader)
+    .send(debt)
+    .expect(201);
 });
 
-test.before(() => request
-  .post('/debts')
-  .send(debt)
-  .set(...ctx.tokenHeader)
-  .expect(201)
-);
-
-test('debt pay', async t => {
+test('debt pay', async (t) => {
   t.plan(1);
 
-  const pay = { from: debt.from[0], to: debt.to, amount: 10 };
+  const pay = { from: ctx.fromUserData._id, to: debt.to, amount: 10 };
 
-  await request.post('/debts/pay')
-    .set(...ctx.tokenHeader)
+  await request
+    .post('/debts/pay')
+    .set(...ctx.fromUserData.tokenHeader)
     .send(pay)
     .expect(201);
 
-  await request.get(`/totals?to=${pay.to}&from=${pay.from}`)
-    .set(...ctx.tokenHeader)
+  await request
+    .get(`/totals?to=${pay.to}&from=${ctx.fromUserData._id}`)
+    .set(...ctx.fromUserData.tokenHeader)
     .expect(({ body }) => {
       t.is(body[0].amount, debt.amount / count - pay.amount);
     })
     .expect(200);
-
 });
 
-test('not own debt pay', async() => {
+test('not own debt pay', async (t) => {
+  const pay = { from: ctx.fromUserData._id, to: debt.from[1], amount: 10 };
 
-  const pay = { from: debt.from[0], to: debt.from[1], amount: 10 };
+  const res = await request
+    .post('/debts/pay')
+    .set(...ctx.toUser.tokenHeader)
+    .send(pay);
 
-  await request.post('/debts/pay')
-    .set(...ctx.tokenHeader)
-    .send(pay)
-    .expect(401);
-
+  t.is(res.status, 403);
 });

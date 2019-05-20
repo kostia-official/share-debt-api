@@ -1,20 +1,9 @@
-const mongoose = require('mongoose');
-const config = require('getconfig');
-const serverStatus = require('../helpers/server-status');
+const users = require('./users/users.service');
+const totals = require('./totals/totals.service');
+const debts = require('./debts/debts.service');
 
-const users = require('./users');
-const totals = require('./totals');
-const debts = require('./debts');
-
-module.exports = function () {
-  const app = this;
-
-  mongoose.connect(config.db.url);
-  mongoose.Promise = global.Promise;
-
+module.exports = function(app) {
   app.configure(users);
   app.configure(totals);
   app.configure(debts);
-
-  app.service('/', { find: serverStatus });
 };

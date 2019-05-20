@@ -1,7 +1,49 @@
 {
   "host": "localhost",
-  "port": 3020,
-  "db": {
-    "url": "mongodb://localhost:27017/share"
+  "port": 3030,
+  "public": "../public/",
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "mongodb": "mongodb://localhost:27017/share-debt",
+  "authentication": {
+    "secret": "ab4b2d593e3dc069e75dba56aa7172983e7c4f54a2952b478630aec43f760c35cd006a8d70e5dd07efe025675004f3e47bf1b4d4d6d6ee16dbea3f4f0c30a4ee79096f789994a3ef533beeb99e0a257bf098ee35c45d41c45302d4d345a5da96c18cdca704a38f0f33b26faef331be7b8727658ebba6529d1fd7e967183e2bea7407df1e4eb8c11c07104f245fe35cc094a855587ce5bba470bf2b00a522e90f4eea24d95b5e8ea721aa3040f366a00b3a926af20039167e72887d36b7e1b4ca04c0001bde1fd4beed16e4c2be1b2122348b384c77c4861c7a66ba5c4e79da76ca81042be529d4f26b6f3c09ba9318a5da4c8e0110057da2ac3f084c12f2c82f",
+    "strategies": [
+      "local",
+      "jwt"
+    ],
+    "path": "/authentication",
+    "service": "users",
+    "jwt": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "subject": "anonymous",
+      "issuer": "feathers",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "entity": "user",
+      "usernameField": "email",
+      "passwordField": "password"
+    },
+    "auth0": {
+      "clientID": "your auth0 client id",
+      "clientSecret": "your auth0 client secret",
+      "successRedirect": "/",
+      "domain": "mydomain.auth0.com",
+      "scopes": [
+        "profile"
+      ]
+    },
+    "cookie": {
+      "enabled": true,
+      "name": "feathers-jwt",
+      "httpOnly": false,
+      "secure": false
+    }
   }
 }

@@ -1,5 +1,4 @@
 module.exports = ({ fk }) => (hook) => {
-
   if (hook.method === 'create') {
     hook.data[fk] = hook.params[fk];
   } else {

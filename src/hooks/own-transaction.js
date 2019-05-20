@@ -1,11 +1,13 @@
-const errors = require('feathers-errors');
+const { Forbidden } = require('@feathersjs/errors');
 
-module.exports = () => async(hook) => {
-  const { data: { from, to }, params } = hook;
-  const id = String(params.user.id);
+module.exports = () => async (hook) => {
+  const {
+    data: { from, to },
+    params
+  } = hook;
+  const id = String(params.user._id);
   const isOwnTransaction = String(from) === id || String(to) === id;
 
-  if (!isOwnTransaction) throw new errors.NotAuthenticated('You can pay only your debts!');
-
+  if (!isOwnTransaction) throw new Forbidden();
   return hook;
 };

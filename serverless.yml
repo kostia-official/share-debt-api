@@ -1,0 +1,42 @@
+service: share-debt-api
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: eu-west-1
+  timeout: 20
+  environment:
+    DB_URL: ${ssm:share-debt-db-url-${opt:stage}~true}
+    NODE_ENV: production
+custom:
+  config:
+    domain: api-${opt:stage}.share-debt.cf
+  scripts:
+    hooks:
+      'package:initialize': |
+        sls create-cert --stage=${opt:stage} &&
+        sls create_domain --stage=${opt:stage}
+  # Attach a domain to API Gateway
+  customDomain:
+    domainName: ${self:custom.config.domain}
+    createRoute53Record: true
+  customCertificate:
+    certificateName: ${self:custom.config.domain}
+    hostedZoneName: share-debt.cf.
+    region: us-east-1
+functions:
+  server:
+    handler: src/lambda.handler
+    events:
+      # Run Lambda by schedule to prevent long cold starts
+      - schedule: rate(5 minutes)
+      # Proxy all routes to Lambda
+      - http: ANY /
+      - http:
+          method: ANY
+          path: '{proxy+}'
+          cors: true
+plugins:
+  - serverless-plugin-scripts # To run predeploy scripts
+  - serverless-certificate-creator # To automatically create SSL certificates
+  - serverless-domain-manager # To automatically create domains in Route53 and attach to API Gateway
+  - serverless-offline

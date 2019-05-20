@@ -6,10 +6,9 @@ const sinon = require('sinon');
 const request = require('supertest-promised')(app);
 const helpers = require('./helpers')(app);
 
-randomPort(port => {
+randomPort((port) => {
   const server = app.listen(port);
   app.setup(server);
 });
-
 
 module.exports = { app, sinon, request, helpers };

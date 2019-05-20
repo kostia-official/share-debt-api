@@ -12,7 +12,10 @@ module.exports = (app) => {
   }
 
   function userData(user) {
-    return _.assign({ email: randomString() + '@gmail.com', name: randomString(), password: randomString() }, user);
+    return _.assign(
+      { email: randomString() + '@gmail.com', name: randomString(), password: randomString() },
+      user
+    );
   }
 
   function createUser(user) {
@@ -21,10 +24,15 @@ module.exports = (app) => {
 
   async function createLoggedInUser(user) {
     const data = userData(user);
-    const a = await createUser(data);
-    const { token } = (await request.post('/auth/local').send(data)).body;
-    return { ...a.toObject(), token, tokenHeader: ['Authorization', token] };
+    const { _id } = await createUser(data);
+    const { accessToken } = (await request.post('/authentication').send(data)).body;
+    return {
+      _id: String(_id),
+      ...data,
+      token: accessToken,
+      tokenHeader: ['Authorization', accessToken]
+    };
   }
-  
+
   return { createUser, randomString, userData, createLoggedInUser };
 };

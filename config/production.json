@@ -1,7 +1,4 @@
 {
-  "host": "0.0.0.0",
-  "port": "$PORT",
-  "db": {
-    "url": "$DATABASE_URL"
-  }
+  "host": "share-debt-api-app.feathersjs.com",
+  "port": "PORT"
 }
